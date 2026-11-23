@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geografiprovet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: en kolumn, flikrad överst, ett kort i taget. Mobil först. */
+:root{
+  --bg:#eaf1f6; --ink:#13232f; --card:#ffffff; --accent:#1c6f8c; --accent-ink:#ffffff;
+  --good:#2b8a57; --good-bg:#e0f3e8; --bad:#c4452a; --bad-bg:#fbe5df; --line:#cfdce5; --sun:#f3b73a; --mute:#5a6e7c;
+  --display:'Fredoka','Trebuchet MS',system-ui,sans-serif; --body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45}
+body{padding-bottom:48px}
+header{padding:18px 16px 6px;max-width:680px;margin:0 auto}
+header h1{font-family:var(--display);font-weight:600;font-size:28px;margin:0;text-wrap:balance}
+header p{margin:2px 0 0;color:var(--mute);font-weight:600}
+#tabs{position:sticky;top:0;z-index:5;display:flex;gap:8px;overflow-x:auto;padding:10px 16px;background:var(--bg);max-width:680px;margin:0 auto}
+.tab{flex:0 0 auto;border:2px solid var(--line);background:var(--card);color:var(--ink);font:800 15px var(--body);padding:9px 14px;border-radius:999px;cursor:pointer}
+.tab.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+main{max-width:680px;margin:0 auto;padding:6px 16px}
+h2{font-family:var(--display);font-weight:600;font-size:22px;margin:8px 0;text-wrap:balance}
+h3{font-family:var(--display);font-weight:500;font-size:18px;margin:14px 0 6px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:16px;margin:10px 0}
+.card p{margin:6px 0}
+.muted{color:var(--mute)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
+.chip{border:2px solid var(--line);background:var(--card);color:var(--ink);font:700 15px var(--body);padding:9px 13px;border-radius:12px;cursor:pointer;min-height:44px}
+.chip.on{border-color:var(--accent);background:#d9edf5;color:#0d4a60}
+.btn{display:block;width:100%;min-height:52px;border:0;border-radius:14px;background:var(--accent);color:var(--accent-ink);font:800 17px var(--body);cursor:pointer;margin:12px 0}
+.btn.alt{background:var(--card);color:var(--accent);border:2px solid var(--accent)}
+.row{display:flex;gap:10px}.row .btn{margin:12px 0}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.top{display:flex;justify-content:space-between;font-weight:800;color:var(--mute);margin-top:6px}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden;margin:6px 0 10px}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.q h2{margin:0}
+.big{font-size:72px;line-height:1.1;text-align:center;margin-bottom:6px}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;min-height:52px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:12px 14px;font:600 16px var(--body);cursor:pointer}
+.opt.right{background:var(--good-bg);border-color:var(--good)}
+.opt.wrong{background:var(--bad-bg);border-color:var(--bad)}
+.opt:disabled{cursor:default;color:var(--ink)}
+.fb{border-radius:14px;padding:12px 14px;margin:12px 0 0}
+.fb.ok{background:var(--good-bg);color:#14502f}.fb.no{background:var(--bad-bg);color:#7a2410}
+.flash{min-height:230px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;user-select:none;padding:22px}
+.flash .side{font:800 13px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin-bottom:10px}
+.flash .txt{font-family:var(--display);font-size:26px;line-height:1.25;text-wrap:balance}
+.flash.back{background:#fff7e0;border-color:var(--sun)}
+.flash.back .txt{font-family:var(--body);font-weight:600;font-size:21px}
+.score{font-family:var(--display);font-size:46px;text-align:center;margin:6px 0}
+.wrongitem{border-top:1px solid var(--line);padding:10px 0}
+.wrongitem:first-child{border-top:0}
+.mt-terms{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.mt-defs{display:grid;gap:8px}
+.mt{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 12px;font:600 15.5px var(--body);text-align:left;cursor:pointer;min-height:46px}
+.mt.term{font-weight:800}
+.mt.sel{border-color:var(--accent);background:#d9edf5}
+.mt.done{background:var(--good-bg);border-color:var(--good);color:#14502f;cursor:default}
+.mt.bad{background:var(--bad-bg);border-color:var(--bad)}
+table{width:100%;border-collapse:collapse;font-size:16px}
+td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--mute);font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+.plan li{margin:6px 0}
+ul,ol{padding-left:22px;margin:6px 0}
+a{color:var(--accent);font-weight:800}
+</style>
+</head>
+<body>
+<header>
+  <h1>Plugga inför geografiprovet</h1>
+  <p>Jordytan förändras och Europa. Prov torsdag 26/11, Adam</p>
+</header>
+<nav id="tabs" aria-label="Övningar"></nav>
+<main id="app"></main>
+
+<script>
+/* ---------- Data ---------- */
+const TERMS=[
+['Jordskorpa','yttersta lagret på jordklotet.','jord'],
+['Mantel','ligger innanför jordskorpan. Här finns varm magma som hela tiden rör sig.','jord'],
+['Magma','smält berg som finns under jordytan.','jord'],
+['Lava','magma som har kommit upp till jordytan.','jord'],
+['Inre kärna','den inre delen av jordklotets kärna. Det finns mycket järn där.','jord'],
+['Yttre kärna','den yttre delen av jordklotets kärna.','jord'],
+['Pangea','en superkontinent där alla jordens kontinenter satt ihop. Fanns för 200 miljoner år sedan.','jord'],
+['Kontinent','landområden på jorden som är skapade av naturen. Jorden delas in i 6 kontinenter.','jord'],
+['Världsdel','landområden på jorden som människan har bestämt gränserna för. Jorden delas in i 7 världsdelar.','jord'],
+['Endogena krafter','krafter som kommer inifrån jorden och som påverkar jordytans utseende.','jord'],
+['Exogena krafter','krafter som kommer utifrån, till exempel vatten, vind och is, och som påverkar jordytans utseende.','jord'],
+['Bergskedja','flera berg som sitter ihop. Bildas när två kontinentalplattor krockar.','jord'],
+['Vulkan','en öppning i jordskorpan där hett magma kommer ut från jordens inre. Kan bildas när två kontinentalplattor glider ifrån varandra.','jord'],
+['Jordbävning','när marken skakar. Bildas genom att två kontinentalplattor glider längs med varandra och hakar i varandra.','jord'],
+['Erosion','när vatten, vind eller is nöter på och flyttar material som sten, grus och sand.','jord'],
+['Vittring','när berg och stenar bryts sönder i mindre delar.','jord'],
+['Mekanisk vittring','när vatten eller värme gör så att berg och stenar går sönder.','jord'],
+['Kemisk vittring','när sura och frätande ämnen i vatten löser upp berget.','jord'],
+['Naturlandskap','landskap som inte har förändrats av människan.','jord'],
+['Kulturlandskap','landskap som förändrats och använts av människan.','jord'],
+['Kust','den del av land som gränsar mot hav eller sjöar.','europa'],
+['Ö','landområde omgivet av vatten på alla sidor.','europa'],
+['Halvö','landområde omgivet av vatten på tre sidor.','europa'],
+['Slätt','ett stort, platt område som ofta är bra för odling.','europa'],
+['Gräns','en tänkt linje som skiljer en stat från en annan.','europa'],
+['Stat','ett annat ord för land.','europa'],
+['Flod','ett större rinnande vattendrag.','europa'],
+['Klimat','vädret på en plats under en längre tid.','europa'],
+['Klimatzon','ett stort geografiskt område med liknande klimat.','europa'],
+['Vegetation','ett annat ord för växtlighet.','europa'],
+['Vegetationsområde','ett stort område med liknande typ av växtlighet.','europa'],
+['Tundra','ett kallt område där det inte växer några träd.','europa'],
+['Stäpp','en torr slätt där det växer gräs eller buskar, men inga träd.','europa'],
+['Odlad jord','områden där människan har skapat åkrar eller där djur betar.','europa'],
+['Naturresurser','sådant som finns i naturen som människan använder för att leva, bygga samhällen och tillverka varor.','europa'],
+['Förnybara naturresurser','naturresurser som kan återskapas eller växa tillbaka, t.ex. träd.','europa'],
+['Icke förnybara naturresurser','naturresurser som finns i begränsad mängd och som kan ta slut, t.ex. olja.','europa']
+].map(([t,d,c],i)=>({id:i,t,d,c}));
+
+/* [kategori, fråga, rätt svar, [fel svar], förklaring] */
+const CUSTOM=[
+['jord','Vilket är jordens yttersta lager?','Jordskorpan',['Manteln','Yttre kärnan','Inre kärnan'],'Skorpan är som skalet på ett ägg.'],
+['jord','Vilket lager ligger direkt innanför jordskorpan?','Manteln',['Yttre kärnan','Inre kärnan','Lavan'],'Ordningen inifrån och ut: inre kärnan, yttre kärnan, manteln, jordskorpan.'],
+['jord','Vad finns det mycket av i inre kärnan?','Järn',['Is','Sand','Olja'],''],
+['jord','Hur många kontinenter delas jorden in i?','6',['5','7','8'],'Kontinenter är 6, världsdelar är 7.'],
+['jord','Hur många världsdelar delas jorden in i?','7',['6','5','9'],'Världsdelar är 7, kontinenter är 6.'],
+['jord','Vem har bestämt gränserna för världsdelarna?','Människor',['Naturen','Vulkanerna','Kontinentalplattorna'],'Kontinenter skapas av naturen, världsdelar bestämmer människor.'],
+['jord','Hur länge sedan fanns superkontinenten Pangea?','För 200 miljoner år sedan',['För 2 000 år sedan','För 20 miljoner år sedan','För 2 miljarder år sedan'],''],
+['jord','Hur snabbt rör sig kontinentalplattorna?','Några centimeter varje år',['Några meter varje dag','De står stilla','Flera kilometer varje år'],'Därför fortsätter kontinenterna att flytta sig.'],
+['jord','Vad bildas när två plattor krockar?','Bergskedjor',['Vulkaner','Jordbävningar','Deltan'],'Krockar = bergskedjor. Exempel: Himalaya och Anderna.'],
+['jord','Vad kan bildas när plattor glider isär?','Berg och vulkaner',['Bergskedjor','Jordbävningar','Slätter'],'Magma stiger upp, svalnar och blir ny jordskorpa. Exempel: Mittatlantiska ryggen (Island).'],
+['jord','Vad kan uppstå när plattor glider längs med varandra?','Jordbävningar',['Bergskedjor','Vulkaner','Deltan'],'De hakar fast och släpper plötsligt. Exempel: San Andreas-förkastningen.'],
+['jord','Vilket är ett exempel på bergskedjor som bildats när plattor krockat?','Himalaya och Anderna',['Mittatlantiska ryggen','San Andreas-förkastningen','Island'],''],
+['jord','Vilket är ett exempel på att plattor glider isär?','Mittatlantiska ryggen (Island)',['Himalaya','Anderna','San Andreas-förkastningen'],''],
+['jord','Vilken av dessa är en endogen kraft?','Plattornas rörelser',['Vinden','Isen','Vattnet'],'Endogena krafter kommer inifrån jorden.'],
+['jord','Vilken av dessa är en exogen kraft?','Vind',['Plattornas rörelser','Vulkanutbrott','Jordbävning'],'Exogena krafter kommer utifrån: vatten, vind och is.'],
+['jord','Vad kallas det när vind eller vatten flyttar sand, jord och stenar?','Erosion',['Vittring','Delta','Slätt'],''],
+['jord','Vad bildas när en flod rinner ut i havet och lämnar sand och lera efter sig?','Ett delta',['En bergskedja','En vulkan','En halvö'],''],
+['jord','Vatten fryser i en spricka och spränger sönder stenen. Vad kallas det?','Mekanisk vittring',['Kemisk vittring','Erosion','Delta'],'Även växters rötter kan spränga sönder sten.'],
+['jord','Surt regn löser upp en sten. Vad kallas det?','Kemisk vittring',['Mekanisk vittring','Erosion','Delta'],'Vatten och syre kan också få sten att rosta.'],
+['jord','Ett landskap med åkrar och vägar är ett…','Kulturlandskap',['Naturlandskap','Delta','Tundra'],'Människan har förändrat och använt det.'],
+['jord','Ett landskap som människan inte har förändrat är ett…','Naturlandskap',['Kulturlandskap','Odlad jord','Stat'],''],
+['europa','Vilka tre klimatzoner finns i Europa?','Polarzon, tempererade zonen, subtropiska zonen',['Polarzon, tropiska zonen, ökenzonen','Tempererade zonen, tropiska zonen, subtropiska zonen','Polarzon, ökenzonen, tempererade zonen'],''],
+['europa','Vilken klimatzon ligger längst norrut i Europa?','Polarzonen',['Tempererade zonen','Subtropiska zonen','Tropiska zonen'],''],
+['europa','I vilken klimatzon ligger Sverige, Tyskland och Frankrike?','Tempererade zonen',['Polarzonen','Subtropiska zonen','Tropiska zonen'],'Enligt kartan på lappen.'],
+['europa','I vilken klimatzon ligger Spanien, Italien och Grekland?','Subtropiska zonen',['Polarzonen','Tempererade zonen','Tundran'],''],
+['europa','Vilket vegetationsområde är kallt och saknar träd?','Tundra',['Skog','Stäpp','Odlad jord'],''],
+['europa','Vilket vegetationsområde är en torr slätt med gräs och buskar men inga träd?','Stäpp',['Tundra','Skog','Berg'],''],
+['europa','Vilka sex vegetationsområden visas på kartan?','Tundra, is, skog, berg, odlad jord, stäpp',['Tundra, öken, skog, berg, odlad jord, stäpp','Tundra, is, skog, hav, odlad jord, öken','Is, skog, berg, regnskog, odlad jord, stäpp'],''],
+['europa','Vilken av dessa är en förnybar naturresurs?','Fisk',['Olja','Metaller','Mineraler'],'Förnybara: skog, vatten, fisk.'],
+['europa','Vilken av dessa är en icke förnybar naturresurs?','Olja',['Skog','Vatten','Fisk'],'Icke förnybara: olja, metaller, mineraler.'],
+['europa','Vad ger skogen oss?','Trä och virke till papper och byggnader',['Olja och metaller','Oliver och citrusfrukter','Fisk och transporter'],''],
+['europa','Vad hittar man i berggrunden?','Metaller, mineraler och olja',['Vete och potatis','Fisk','Trä och virke'],''],
+['europa','Vad odlas på åkrar i Europa?','Vete, potatis, frukt och grönsaker',['Olja och mineraler','Trä och virke','Fisk och skaldjur'],''],
+['europa','Vad odlas bland annat i södra Europa?','Oliver och citrusfrukter',['Vete och potatis','Trä','Metaller'],''],
+['europa','Vad ger hav och floder oss?','Fisk och transportvägar',['Olja och metaller','Oliver','Trä och virke'],''],
+['bonus','Vilken bergskedja ligger mellan Frankrike och Spanien?','Pyrenéerna',['Alperna','Skanderna','Karpaterna'],''],
+['bonus','Vilken bergskedja finns bland annat i Schweiz och Österrike?','Alperna',['Pyrenéerna','Uralbergen','Apenninerna'],''],
+['bonus','Vilken bergskedja går längs gränsen mellan Norge och Sverige?','Skanderna',['Alperna','Pyrenéerna','Apenninerna'],''],
+['bonus','Vilken bergskedja ligger i Italien och formar landet som en stövel?','Apenninerna',['Skanderna','Pyrenéerna','Uralbergen'],''],
+['bonus','Vilken bergskedja räknas som gräns mellan Europa och Asien?','Uralbergen',['Alperna','Pyrenéerna','Skanderna'],''],
+['bonus','Vilken bergskedja finns bland annat i Rumänien och Slovakien?','Karpaterna',['Skanderna','Pyrenéerna','Alperna'],''],
+['bonus','Vilket hav ligger söder om Europa?','Medelhavet',['Östersjön','Norra ishavet','Svarta havet'],''],
+['bonus','Vilket hav ligger mellan Sverige och Polen?','Östersjön',['Nordsjön','Medelhavet','Atlanten'],''],
+['bonus','Vilket hav ligger väster om Europa?','Atlanten',['Medelhavet','Svarta havet','Östersjön'],''],
+['bonus','Vilket hav ligger norr om Europa?','Norra ishavet',['Medelhavet','Svarta havet','Atlanten'],''],
+['bonus','Vilken flod rinner genom Wien, Budapest och Belgrad?','Donau',['Rhen','Volga','Seine'],''],
+['bonus','Vilken flod rinner genom Tyskland och Nederländerna och mynnar i Nordsjön?','Rhen',['Donau','Volga','Po'],''],
+['bonus','Vilken är Europas längsta flod?','Volga',['Donau','Rhen','Seine'],'Volga rinner genom Ryssland.']
+];
+
+/* [kategori, påstående, sant?, förklaring] */
+const TF=[
+['jord','Mantel ligger innanför jordskorpan.',true,''],
+['jord','Lava är magma som har kommit upp till jordytan.',true,''],
+['jord','Inre kärnan är jordens yttersta lager.',false,'Det yttersta lagret är jordskorpan.'],
+['jord','Jorden delas in i 7 kontinenter.',false,'6 kontinenter och 7 världsdelar.'],
+['jord','Jorden delas in i 7 världsdelar.',true,''],
+['jord','Pangea var en superkontinent som fanns för 200 miljoner år sedan.',true,''],
+['jord','Endogena krafter kommer utifrån, till exempel från vind och is.',false,'Endogena kommer inifrån. Exogena kommer utifrån.'],
+['jord','Vatten, vind och is är exogena krafter.',true,''],
+['jord','Bergskedjor bildas när kontinentalplattor glider isär.',false,'Bergskedjor bildas när plattor krockar.'],
+['jord','Jordbävningar kan uppstå när plattor hakar fast och sedan plötsligt släpper.',true,''],
+['jord','Vulkaner kan bildas när plattor glider isär.',true,''],
+['jord','Plattorna rör sig några meter varje dag.',false,'Några centimeter varje år.'],
+['jord','Ett delta bildas där en flod rinner ut i havet.',true,''],
+['jord','Kemisk vittring är när vatten fryser och spränger sönder stenen.',false,'Det är mekanisk vittring. Kemisk vittring är när sura ämnen löser upp berget.'],
+['jord','Erosion är när vatten, vind eller is flyttar sten, grus och sand.',true,''],
+['jord','Ett naturlandskap har förändrats av människan.',false,'Det är ett kulturlandskap.'],
+['jord','Åkrar och byar är exempel på kulturlandskap.',true,''],
+['europa','Island är en ö.',true,''],
+['europa','En halvö är omgiven av vatten på alla sidor.',false,'På tre sidor. På alla sidor är en ö.'],
+['europa','Klimat är vädret på en plats under en längre tid.',true,''],
+['europa','Tundra är ett kallt område med många träd.',false,'På tundran växer inga träd.'],
+['europa','Stäpp är en torr slätt där det växer gräs och buskar men inga träd.',true,''],
+['europa','Sverige ligger i polarzonen.',false,'Sverige ligger i tempererade zonen.'],
+['europa','Spanien och Grekland ligger i subtropiska zonen.',true,''],
+['europa','Olja är en förnybar naturresurs.',false,'Olja kan ta slut. Den är icke förnybar.'],
+['europa','Skog är en förnybar naturresurs.',true,'Träd kan växa tillbaka.'],
+['europa','Vatten och fisk är förnybara naturresurser.',true,''],
+['europa','Metaller och mineraler är förnybara naturresurser.',false,'De kan inte bildas på nytt.'],
+['europa','Stat är ett annat ord för land.',true,''],
+['europa','Vegetation är ett annat ord för växtlighet.',true,'']
+];
+
+/* [land, huvudstad, flagga] i samma ordning som Seterra-kartan */
+const C=[
+['Ryssland','Moskva','🇷🇺'],['Finland','Helsingfors','🇫🇮'],['Estland','Tallinn','🇪🇪'],['Belarus','Minsk','🇧🇾'],
+['Lettland','Riga','🇱🇻'],['Litauen','Vilnius','🇱🇹'],['Ukraina','Kiev (Kyiv)','🇺🇦'],['Moldavien','Chisinau','🇲🇩'],
+['Norge','Oslo','🇳🇴'],['Sverige','Stockholm','🇸🇪'],['Danmark','Köpenhamn','🇩🇰'],['Polen','Warszawa','🇵🇱'],
+['Tjeckien','Prag','🇨🇿'],['Slovakien','Bratislava','🇸🇰'],['Rumänien','Bukarest','🇷🇴'],['Bulgarien','Sofia','🇧🇬'],
+['Turkiet','Ankara','🇹🇷'],['Cypern','Nicosia','🇨🇾'],['Tyskland','Berlin','🇩🇪'],['Österrike','Wien','🇦🇹'],
+['Ungern','Budapest','🇭🇺'],['Serbien','Belgrad','🇷🇸'],['Kosovo','Pristina','🇽🇰'],['Nordmakedonien','Skopje','🇲🇰'],
+['Grekland','Aten','🇬🇷'],['Slovenien','Ljubljana','🇸🇮'],['Kroatien','Zagreb','🇭🇷'],['Bosnien-Herzegovina','Sarajevo','🇧🇦'],
+['Montenegro','Podgorica','🇲🇪'],['Albanien','Tirana','🇦🇱'],['Island','Reykjavik','🇮🇸'],['Nederländerna','Amsterdam','🇳🇱'],
+['Belgien','Bryssel','🇧🇪'],['Schweiz','Bern','🇨🇭'],['San Marino','San Marino','🇸🇲'],['Italien','Rom','🇮🇹'],
+['Vatikanstaten','Vatikanstaten','🇻🇦'],['Malta','Valletta','🇲🇹'],['Irland','Dublin','🇮🇪'],['Storbritannien','London','🇬🇧'],
+['Luxemburg','Luxemburg','🇱🇺'],['Liechtenstein','Vaduz','🇱🇮'],['Frankrike','Paris','🇫🇷'],['Monaco','Monaco','🇲🇨'],
+['Andorra','Andorra la Vella','🇦🇩'],['Portugal','Lissabon','🇵🇹'],['Spanien','Madrid','🇪🇸']
+];
+
+/* ---------- Hjälpfunktioner ---------- */
+const app=document.getElementById('app');
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const mk=(q,c,w,ex,big)=>{const o=shuf([c,...w]);return{q,o,a:o.indexOf(c),ex:ex||'',big:big||''}};
+const related=(a,b)=>{const x=a.t.toLowerCase(),y=b.t.toLowerCase();if(x.startsWith(y)||y.startsWith(x))return true;const w=new Set(x.split(' '));return y.split(' ').some(v=>w.has(v))};
+const pickDistinct=(arr,n)=>{const out=[];for(const t of shuf(arr)){if(out.length>=n)break;if(!out.some(o=>related(o,t)))out.push(t)}return out};
+const catName={alla:'Allt',jord:'Jordytan förändras',europa:'Europa',bonus:'Bonus: berg och vatten'};
+const sel={fcCat:'alla',fcDir:'term',mcCat:'alla',mcN:'10',tfCat:'alla',tfN:'10',mtCat:'alla',ldMode:'mix',ldN:'10'};
+const chips=(key,opts)=>`<div class="chips">${opts.map(([v,l])=>`<button class="chip${sel[key]===v?' on':''}" data-set="${key}:${v}">${l}</button>`).join('')}</div>`;
+const catChips=(key,bonus)=>chips(key,[['alla','Allt'],['jord','Jordytan'],['europa','Europa']].concat(bonus?[['bonus','Bonus']]:[]));
+const termsIn=c=>TERMS.filter(t=>c==='alla'||t.c===c);
+
+/* ---------- Flikar ---------- */
+const tabs=[['start','Start'],['fc','Flashcards'],['mc','Flerval'],['tf','Sant / falskt'],['mt','Para ihop'],['ld','Länder']];
+let tab='start';
+function nav(){document.getElementById('tabs').innerHTML=tabs.map(([k,n])=>`<button class="tab${k===tab?' on':''}" data-tab="${k}">${n}</button>`).join('')}
+function go(keep){nav();({start:viewStart,fc:fcMenu,mc:mcMenu,tf:tfMenu,mt:mtMenu,ld:ldMenu})[tab]();if(!keep)window.scrollTo(0,0)}
+
+function viewStart(){
+app.innerHTML=`
+<h2>Så här pluggar du</h2>
+<div class="card"><p>Provet handlar om <b>jordytan som förändras</b> och <b>världsdelen Europa</b>. Det frivilliga "jag vill visa mer"-provet gäller flaggor, huvudstäder, berg och vatten i Europa.</p>
+<p class="muted">Tryck på en flik ovan. Börja med flashcards, gå sedan vidare till frågorna.</p></div>
+<h3>Plan fram till torsdag</h3>
+<div class="card"><ol class="plan">
+<li><b>Söndag:</b> Flashcards Jordytan och Para ihop Jordytan.</li>
+<li><b>Måndag:</b> Länder på kartan (Seterra-bladet) och Flerval Jordytan.</li>
+<li><b>Tisdag:</b> Flashcards Europa, Flerval Europa och naturresurserna.</li>
+<li><b>Onsdag:</b> Allt blandat. Sant/falskt och öva de du missade. Förklara tre begrepp för en vuxen med egna ord.</li>
+<li><b>Torsdag morgon:</b> Bara korten du markerade "Öva mer".</li>
+</ol></div>
+<h3>Fler sätt att plugga</h3>
+<div class="card"><ul>
+<li><b>Rita jordens lager</b> från minnet och skriv dit namnen. Jämför med bilden.</li>
+<li><b>Rita tre pilar:</b> krockar (bergskedja), glider isär (berg och vulkaner), glider längs med (jordbävning).</li>
+<li><b>Förklara med egna ord.</b> Provet frågar efter just det. Säg det högt, sedan facit.</li>
+<li><b>Kartan med nummer:</b> täck över namnen och skriv landet bredvid varje siffra.</li>
+<li><b>Korta pass.</b> 15 minuter ett par gånger om dagen slår en lång timme kvällen innan.</li>
+</ul></div>`}
+
+/* ---------- Flashcards ---------- */
+let F=null;
+function fcMenu(){
+app.innerHTML=`<h2>Flashcards</h2><p class="muted">Läs framsidan, svara högt med egna ord, vänd kortet. Markera sedan om du kunde det.</p>
+<h3>Vad ska du öva?</h3>${catChips('fcCat')}
+<h3>Riktning</h3>${chips('fcDir',[['term','Begrepp: förklara'],['def','Förklaring: vad heter begreppet?']])}
+<button class="btn" data-act="fcStart">Starta (${termsIn(sel.fcCat).length} kort)</button>`}
+function fcStart(deck){F={deck:deck||shuf(termsIn(sel.fcCat)),i:0,flip:false,know:0,more:[]};fcShow()}
+function fcShow(){
+if(F.i>=F.deck.length)return fcEnd();
+const t=F.deck[F.i],front=sel.fcDir==='term',f=front?t.t:cap(t.d),b=front?cap(t.d):t.t;
+app.innerHTML=`<div class="top"><span>Kort ${F.i+1} / ${F.deck.length}</span><span>${F.know} kan</span></div><div class="bar"><i style="width:${F.i/F.deck.length*100}%"></i></div>
+<div class="card flash${F.flip?' back':''}" data-act="fcFlip" role="button" tabindex="0"><div class="side">${F.flip?'Svar':(front?'Begrepp':'Förklaring')}</div><div class="txt">${esc(F.flip?b:f)}</div></div>
+${F.flip?`<div class="row"><button class="btn alt" data-act="fcMore">Öva mer</button><button class="btn" data-act="fcKnow">Kan den</button></div>`:`<p class="muted" style="text-align:center">Tryck på kortet för att vända det</p>`}`}
+function fcEnd(){
+app.innerHTML=`<h2>Klart!</h2><div class="card"><div class="score">${F.know} av ${F.deck.length}</div><p style="text-align:center">kort du kunde.</p></div>
+${F.more.length?`<button class="btn" data-act="fcRedo">Öva de ${F.more.length} svåra korten</button>`:''}
+<button class="btn alt" data-act="fcStartAgain">Kör alla igen</button>`}
+
+/* ---------- Frågemotor (flerval, sant/falskt, länder) ---------- */
+let Q=null;
+function runQuiz(list){Q={list,i:0,score:0,wrong:[],locked:false};showQ()}
+function showQ(){
+if(Q.i>=Q.list.length)return endQ();
+const q=Q.list[Q.i];
+app.innerHTML=`<div class="top"><span>Fråga ${Q.i+1} / ${Q.list.length}</span><span>${Q.score} rätt</span></div><div class="bar"><i style="width:${Q.i/Q.list.length*100}%"></i></div>
+<div class="card q">${q.big?`<div class="big" aria-hidden="true">${q.big}</div>`:''}<h2>${esc(q.q)}</h2></div>
+<div class="opts">${q.o.map((o,k)=>`<button class="opt" data-act="ans" data-k="${k}">${esc(o)}</button>`).join('')}</div><div id="fb"></div>`}
+function answer(k){
+if(Q.locked)return;Q.locked=true;
+const q=Q.list[Q.i],ok=k===q.a;
+if(ok)Q.score++;else Q.wrong.push(q);
+document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(j===q.a)b.classList.add('right');else if(j===k)b.classList.add('wrong')});
+document.getElementById('fb').innerHTML=`<div class="fb ${ok?'ok':'no'}"><b>${ok?'Rätt!':'Inte riktigt.'}</b> ${ok?'':'Rätt svar: '+esc(q.o[q.a])+'. '}${esc(q.ex)}</div><button class="btn" data-act="next">${Q.i+1>=Q.list.length?'Se resultat':'Nästa'}</button>`;
+document.getElementById('fb').scrollIntoView({block:'nearest',behavior:'smooth'})}
+function endQ(){
+const n=Q.list.length,p=Math.round(Q.score/n*100);
+const msg=p===100?'Perfekt!':p>=80?'Mycket bra!':p>=60?'Bra på väg. Öva på de du missade.':'Fortsätt öva, det kommer sitta snart.';
+app.innerHTML=`<h2>Resultat</h2><div class="card"><div class="score">${Q.score} av ${n}</div><p style="text-align:center">${msg}</p></div>
+${Q.wrong.length?`<h3>Du missade</h3><div class="card">${Q.wrong.map(q=>`<div class="wrongitem"><b>${esc(q.big?q.big+' ':'')}${esc(q.q)}</b><br><span style="color:var(--good);font-weight:800">${esc(q.o[q.a])}</span></div>`).join('')}</div>
+<button class="btn" data-act="retry">Öva bara på de missade</button>`:''}
+<button class="btn alt" data-act="menu">Tillbaka till menyn</button>`}
+function reshuffle(q){if(q.tf)return q;const c=q.o[q.a];const o=shuf(q.o);return{...q,o,a:o.indexOf(c)}}
+
+/* ---------- Flerval ---------- */
+function mcMenu(){
+app.innerHTML=`<h2>Flervalsfrågor</h2><p class="muted">Fyra svarsalternativ. Du får se rätt svar direkt.</p>
+<h3>Område</h3>${catChips('mcCat',true)}
+<h3>Antal frågor</h3>${chips('mcN',[['10','10'],['20','20'],['999','Alla']])}
+<button class="btn" data-act="mcStart">Starta</button>`}
+function buildMC(){
+const cat=sel.mcCat,pool=[];
+CUSTOM.filter(x=>cat==='alla'||x[0]===cat).forEach(([,q,c,w,ex])=>pool.push(()=>mk(q,c,w,ex)));
+if(cat!=='bonus')termsIn(cat).forEach(t=>{
+  const same=TERMS.filter(x=>x.c===t.c&&!related(x,t));
+  if(Math.random()<.5)pool.push(()=>mk(`Vad betyder «${t.t}»?`,cap(t.d),shuf(same).slice(0,3).map(x=>cap(x.d)),''));
+  else pool.push(()=>mk(`Vilket begrepp passar: «${cap(t.d)}»`,t.t,shuf(same).slice(0,3).map(x=>x.t),''));
+});
+return shuf(pool).slice(0,+sel.mcN).map(f=>f())}
+
+/* ---------- Sant / falskt ---------- */
+function tfMenu(){
+app.innerHTML=`<h2>Sant eller falskt</h2><p class="muted">Snabbt pass för att fånga de små detaljerna, som 6 kontinenter men 7 världsdelar.</p>
+<h3>Område</h3>${catChips('tfCat')}
+<h3>Antal påståenden</h3>${chips('tfN',[['10','10'],['999','Alla']])}
+<button class="btn" data-act="tfStart">Starta</button>`}
+function buildTF(){
+return shuf(TF.filter(x=>sel.tfCat==='alla'||x[0]===sel.tfCat)).slice(0,+sel.tfN).map(([,s,v,ex])=>({q:s,o:['Sant','Falskt'],a:v?0:1,ex:ex,big:'',tf:true}))}
+
+/* ---------- Para ihop ---------- */
+let M=null;
+function mtMenu(){
+app.innerHTML=`<h2>Para ihop</h2><p class="muted">Tryck på ett begrepp och sedan på förklaringen som passar. Sex par per runda.</p>
+<h3>Område</h3>${catChips('mtCat')}
+<button class="btn" data-act="mtStart">Starta</button>`}
+function mtStart(){
+const terms=pickDistinct(termsIn(sel.mtCat),6);
+M={terms,defs:shuf(terms),sel:null,done:new Set(),miss:0,bad:null};mtShow()}
+function mtShow(){
+const all=M.done.size===M.terms.length;
+app.innerHTML=`<div class="top"><span>${M.done.size} / ${M.terms.length} par</span><span>${M.miss} fel</span></div>
+<div class="mt-terms">${M.terms.map(t=>`<button class="mt term${M.done.has(t.id)?' done':''}${M.sel===t.id?' sel':''}" data-act="mtT" data-id="${t.id}">${esc(t.t)}</button>`).join('')}</div>
+<div class="mt-defs">${M.defs.map(t=>`<button class="mt${M.done.has(t.id)?' done':''}${M.bad===t.id?' bad':''}" data-act="mtD" data-id="${t.id}">${esc(cap(t.d))}</button>`).join('')}</div>
+${all?`<div class="card" style="margin-top:14px"><div class="score">Klart!</div><p style="text-align:center">${M.miss===0?'Inga fel!':M.miss+' fel på vägen.'}</p></div><button class="btn" data-act="mtStart">Ny runda</button>`:`<p class="muted" style="text-align:center;margin-top:12px">${M.sel===null?'Välj ett begrepp först.':'Välj nu förklaringen.'}</p>`}`}
+function mtTerm(id){if(M.done.has(id))return;M.sel=id;M.bad=null;mtShow()}
+function mtDef(id){
+if(M.done.has(id)||M.sel===null)return;
+if(id===M.sel){M.done.add(id);M.sel=null;M.bad=null}
+else{M.miss++;M.bad=id;setTimeout(()=>{M.bad=null;if(tab==='mt'&&M.done.size<M.terms.length)mtShow()},900)}
+mtShow()}
+
+/* ---------- Länder ---------- */
+function ldMenu(){
+app.innerHTML=`<h2>Länder, flaggor och huvudstäder</h2><p class="muted">För kartprovet och "jag vill visa mer"-provet. Flaggorna visas som emoji, så de syns bäst på mobilen.</p>
+<h3>Övning</h3>${chips('ldMode',[['mix','Blandat'],['flag','Flagga till land'],['cap','Land till huvudstad'],['rcap','Huvudstad till land']])}
+<h3>Antal frågor</h3>${chips('ldN',[['10','10'],['20','20'],['47','Alla 47']])}
+<button class="btn" data-act="ldStart">Starta</button>
+<button class="btn alt" data-act="ldList">Visa alla länder och huvudstäder</button>
+<div class="card"><p>Öva också på kartan med nummer på <a href="https://online.seterra.com/en" target="_blank" rel="noopener">online.seterra.com</a>.</p></div>`}
+function buildLD(){
+const modes=['flag','cap','rcap'];
+return shuf(C).slice(0,+sel.ldN).map(c=>{
+  const m=sel.ldMode==='mix'?modes[Math.floor(Math.random()*3)]:sel.ldMode;
+  const others=shuf(C.filter(x=>x!==c));
+  if(m==='flag'){return mk('Vilket land har den här flaggan?',c[0],others.slice(0,3).map(x=>x[0]),c[0]+', huvudstad '+c[1]+'.',c[2])}
+  const pickW=(i)=>{const out=[];for(const x of others){if(out.length>=3)break;if(x[i]!==c[i]&&!out.includes(x[i]))out.push(x[i])}return out};
+  if(m==='cap'){return mk('Vad heter huvudstaden i '+c[0]+'?',c[1],pickW(1),'',c[2])}
+  return mk(c[1]+' är huvudstad i vilket land?',c[0],pickW(0),'',c[2])})}
+function ldList(){
+app.innerHTML=`<h2>Alla länder</h2><div class="card" style="padding:8px 10px"><table><tr><th></th><th>Land</th><th>Huvudstad</th></tr>${C.map((c,i)=>`<tr><td>${c[2]}</td><td>${i+1}. ${esc(c[0])}</td><td>${esc(c[1])}</td></tr>`).join('')}</table></div><button class="btn alt" data-act="menu">Tillbaka</button>`}
+
+/* ---------- Händelser ---------- */
+const ACTS={
+fcStart:()=>fcStart(),
+fcStartAgain:()=>fcStart(),
+fcFlip:()=>{F.flip=!F.flip;fcShow()},
+fcKnow:()=>{F.know++;F.i++;F.flip=false;fcShow()},
+fcMore:()=>{F.more.push(F.deck[F.i]);F.i++;F.flip=false;fcShow()},
+fcRedo:()=>fcStart(shuf(F.more)),
+mcStart:()=>runQuiz(buildMC()),
+tfStart:()=>runQuiz(buildTF()),
+ldStart:()=>runQuiz(buildLD()),
+ldList:()=>ldList(),
+ans:a=>answer(+a.dataset.k),
+next:()=>{Q.i++;Q.locked=false;showQ();window.scrollTo(0,0)},
+retry:()=>runQuiz(shuf(Q.wrong.map(reshuffle))),
+menu:()=>go(),
+mtStart:()=>mtStart(),
+mtT:a=>mtTerm(+a.dataset.id),
+mtD:a=>mtDef(+a.dataset.id)
+};
+document.addEventListener('click',e=>{
+const t=e.target.closest('[data-tab]');if(t){tab=t.dataset.tab;go();return}
+const s=e.target.closest('[data-set]');if(s){const[k,v]=s.dataset.set.split(':');sel[k]=v;go(true);return}
+const a=e.target.closest('[data-act]');if(a&&ACTS[a.dataset.act])ACTS[a.dataset.act](a)});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.flash')){e.preventDefault();e.target.click()}});
+go();
+</script>
+</body>
+</html>
